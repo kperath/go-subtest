@@ -13,7 +13,7 @@ function generateSubTestJSON(name: string, path: string, buildTags: string) {
   };
 }
 
-function openLaunchConfiguration() {
+function openLaunchConfiguration(testName: string) {
   if (!vscode.workspace.workspaceFolders) {
     vscode.window.showErrorMessage(
       "Extension must be ran in a vscode workspace"
@@ -24,7 +24,22 @@ function openLaunchConfiguration() {
   vscode.workspace
     .openTextDocument(path + "/.vscode/launch.json")
     .then((launch) => {
-      vscode.window.showTextDocument(launch);
+      vscode.window.showTextDocument(launch).then((editor) => {
+        const documentText = editor.document.getText();
+        const match = documentText.match(testName);
+        if (match) {
+          let matchIndex = 0;
+          if (match.index) {
+            matchIndex = match.index;
+          }
+          const matchPos = editor.document.positionAt(matchIndex);
+          if (vscode.window.activeTextEditor) {
+            vscode.window.activeTextEditor.selections = [
+              new vscode.Selection(matchPos, matchPos),
+            ];
+          }
+        }
+      });
     });
 }
 
@@ -124,7 +139,7 @@ export function activate(context: vscode.ExtensionContext) {
                         "launch.json config already exists",
                         "Open launch.json"
                       )
-                      .then(openLaunchConfiguration);
+                      .then(() => openLaunchConfiguration(currentSubTest));
                     return;
                   }
                 }
@@ -145,7 +160,7 @@ export function activate(context: vscode.ExtensionContext) {
                   `Added ${currentSubTest} launch.json`,
                   "Open launch.json"
                 )
-                .then(openLaunchConfiguration);
+                .then(() => openLaunchConfiguration(currentSubTest));
             }
           }
         });
