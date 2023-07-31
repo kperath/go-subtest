@@ -65,9 +65,13 @@ export function activate(context: vscode.ExtensionContext) {
               // get current symbol cursor is focused on
               if (symbol.range.contains(cursorPos)) {
                 const currentSubTest = symbol.name + "/" + cursorText;
-                vscode.window.showInformationMessage(
-                  generateSubTestJSON(currentSubTest, path, "")
-                );
+                const json = generateSubTestJSON(currentSubTest, path, "");
+                // write generated json to clipboard
+                vscode.env.clipboard.writeText(json).then(() => {
+                  vscode.window.showInformationMessage(
+                    `copied ${currentSubTest} JSON. Add it to your launch.json`
+                  );
+                });
               }
             }
           });
