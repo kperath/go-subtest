@@ -46,16 +46,19 @@ export function activate(context: vscode.ExtensionContext) {
       const path = vscode.workspace.workspaceFolders[0].uri.path;
 
       if (editor) {
+        // get current cursor line
         const cursorPosNum = editor.document.offsetAt(editor.selection.active);
         const cursorPos = editor.document.positionAt(cursorPosNum);
-        // get all words surround in quotes
-        const wordRange = editor.document.getWordRangeAtPosition(
-          cursorPos,
-          /".*"/
-        );
-        let subTestName = editor.document.getText(wordRange);
-        subTestName = subTestName.replaceAll('"', "");
-        subTestName = subTestName.replaceAll(" ", "_");
+        // get all words surround in quotes (the subtest name)
+        const line = editor.document.lineAt(cursorPos);
+        if (line.isEmptyOrWhitespace) {
+          return;
+        }
+        const match = line.text.match(/".*"/);
+        if (!match) {
+          return;
+        }
+        const subTestName = match[0].replaceAll('"', "").replaceAll(" ", "_");
 
         // list all symbols in the document
         vscode.commands
