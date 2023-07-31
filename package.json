@@ -14,8 +14,12 @@
   "contributes": {
     "commands": [
       {
-        "command": "go-subtest.helloWorld",
-        "title": "Hello World"
+        "command": "go-subtest.add",
+        "title": "GoSubtest: add test config"
+      },
+      {
+        "command": "go-subtest.goto",
+        "title": "GoSubtest: go to test config"
       }
     ]
   },

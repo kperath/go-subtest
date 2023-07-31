@@ -2,10 +2,7 @@
 
 ## TODO
 
-- Add file guard
 - Add option to just copy to clipboard ie. self manage
-- Clean up code
-- Add tests for each feature
 - Add command to open launch.json to go to current test
 - Formalize README
 - Add to marketplace
