@@ -56,6 +56,11 @@ function openLaunchConfiguration(testName: string) {
         // move cursor to current test config
         const pos = findStringMatch(testName);
         editor.selection = new vscode.Selection(pos, pos);
+        // show moved cursor on screen
+        editor.revealRange(
+          new vscode.Range(pos, pos),
+          vscode.TextEditorRevealType.InCenter
+        );
       });
     });
 }
