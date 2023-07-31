@@ -12,14 +12,24 @@
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
+    "configuration": {
+      "title": "go-subtest",
+      "properties": {
+        "go-subtest.useClipboard": {
+          "type": "boolean",
+          "default": false,
+          "description": "paste to your clipboard instead of to your launch.json (self managed)"
+        }
+      }
+    },
     "commands": [
       {
         "command": "go-subtest.add",
-        "title": "GoSubtest: add test config"
+        "title": "go-subtest: add test config"
       },
       {
         "command": "go-subtest.goto",
-        "title": "GoSubtest: go to test config"
+        "title": "go-subtest: go to test config"
       }
     ]
   },

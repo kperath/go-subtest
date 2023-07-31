@@ -2,8 +2,6 @@
 
 ## TODO
 
-- Add option to just copy to clipboard ie. self manage
-- Add command to open launch.json to go to current test
 - Formalize README
 - Add to marketplace
 

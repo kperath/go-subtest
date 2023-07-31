@@ -127,8 +127,18 @@ async function addSubTest() {
     const line = editor.document.lineAt(pos);
     const buildTags = line.text.replace("//go:build ", "");
 
-    // write generated json to launch.json
     const json = generateSubTestJSON(subTest, uri.path, buildTags);
+
+    // if option enabled, copy json to clipboard instead
+    const useClipboard = vscode.workspace
+      .getConfiguration()
+      .get("go-subtest.useClipboard");
+    if (useClipboard) {
+      vscode.env.clipboard.writeText(JSON.stringify(json));
+      return;
+    }
+
+    // (default) write generated json to launch.json
     const launch = vscode.workspace.getConfiguration("launch", uri);
     const config = launch.get("configurations");
     if (config instanceof Array) {
@@ -153,9 +163,6 @@ async function addSubTest() {
       throw new Error("Configuration field in launch.json should be an array");
     }
 
-    // TODO(kperath): see README
-    // vscode.env.clipboard.writeText(json).then(() => {
-    // });
     vscode.window
       .showInformationMessage(
         `Added ${subTest} launch.json`,
