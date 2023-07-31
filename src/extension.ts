@@ -80,8 +80,12 @@ export function activate(context: vscode.ExtensionContext) {
                 let buildTags = "";
                 const documentText = editor.document.getText();
                 const match = documentText.match("//go:build");
-                if (match && match.index) {
-                  const matchPos = editor.document.positionAt(match.index);
+                if (match) {
+                  let matchIndex = 0;
+                  if (match.index) {
+                    matchIndex = match.index;
+                  }
+                  const matchPos = editor.document.positionAt(matchIndex);
                   const line = editor.document.lineAt(matchPos);
                   buildTags = line.text.replace("//go:build", "");
                 }
