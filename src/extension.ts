@@ -48,8 +48,14 @@ export function activate(context: vscode.ExtensionContext) {
       if (editor) {
         const cursorPosNum = editor.document.offsetAt(editor.selection.active);
         const cursorPos = editor.document.positionAt(cursorPosNum);
-        const wordRange = editor.document.getWordRangeAtPosition(cursorPos);
-        const cursorText = editor.document.getText(wordRange);
+        // get all words surround in quotes
+        const wordRange = editor.document.getWordRangeAtPosition(
+          cursorPos,
+          /".*"/
+        );
+        let subTestName = editor.document.getText(wordRange);
+        subTestName = subTestName.replaceAll('"', "");
+        subTestName = subTestName.replaceAll(" ", "_");
 
         // list all symbols in the document
         vscode.commands
@@ -68,12 +74,12 @@ export function activate(context: vscode.ExtensionContext) {
               }
               // get current symbol cursor is focused on
               if (symbol.range.contains(cursorPos)) {
-                const currentSubTest = symbol.name + "/" + cursorText;
+                const currentSubTest = testName + "/" + subTestName;
 
                 // find build tags
+                let buildTags = "";
                 const documentText = editor.document.getText();
                 const match = documentText.match("//go:build");
-                let buildTags = "";
                 if (match && match.index) {
                   const matchPos = editor.document.positionAt(match.index);
                   const line = editor.document.lineAt(matchPos);
