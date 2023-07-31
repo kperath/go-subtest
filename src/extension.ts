@@ -25,6 +25,7 @@ function openLaunchConfiguration(testName: string) {
     .openTextDocument(path + "/.vscode/launch.json")
     .then((launch) => {
       vscode.window.showTextDocument(launch).then((editor) => {
+        // move cursor to current test
         const documentText = editor.document.getText();
         const match = documentText.match(testName);
         if (match) {
@@ -71,6 +72,11 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.window.showErrorMessage("Editor window not open");
         return;
       }
+      if (editor.document.languageId != "go") {
+        vscode.window.showErrorMessage("Not a go file");
+        return;
+      }
+
       // get current cursor line
       const cursorPosNum = editor.document.offsetAt(editor.selection.active);
       const cursorPos = editor.document.positionAt(cursorPosNum);
