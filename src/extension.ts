@@ -123,7 +123,12 @@ async function addSubTest() {
     const subTest = await getSubTest();
 
     // find go build tags
-    const pos = findStringMatch("//go:build");
+    let pos;
+    try {
+      pos = findStringMatch("//go:build");
+    } catch (err) {
+      pos = new vscode.Position(0, 0);
+    }
     const line = editor.document.lineAt(pos);
     const buildTags = line.text.replace("//go:build ", "");
 
