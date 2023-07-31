@@ -3,6 +3,7 @@
   "displayName": "go-subtest",
   "description": "quickly generate json required in your launch.json for subtests",
   "version": "0.0.1",
+  "icon": "media/gopher.png",
   "engines": {
     "vscode": "^1.80.0"
   },
