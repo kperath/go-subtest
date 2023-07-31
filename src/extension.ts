@@ -119,9 +119,12 @@ export function activate(context: vscode.ExtensionContext) {
                             );
                             return;
                           }
-                          vscode.workspace.openTextDocument(
-                            path + "/.vscode/launch.json"
-                          );
+
+                          vscode.workspace
+                            .openTextDocument(path + "/.vscode/launch.json")
+                            .then((launch) => {
+                              vscode.window.showTextDocument(launch);
+                            });
                         });
                       return;
                     }
@@ -150,9 +153,11 @@ export function activate(context: vscode.ExtensionContext) {
                       );
                       return;
                     }
-                    vscode.workspace.openTextDocument(
-                      path + "/.vscode/launch.json"
-                    );
+                    vscode.workspace
+                      .openTextDocument(path + "/.vscode/launch.json")
+                      .then((launch) => {
+                        vscode.window.showTextDocument(launch);
+                      });
                   });
               }
             }

@@ -4,6 +4,9 @@
 
 - Add option to just copy to clipboard ie. self manage
 - Add file guard
+- After opening launch.json, move cursor over test (regex to find position)
+- Formalize README
+- Add to marketplace
 
 This is the README for your extension "go-subtest". After writing up a brief description, we recommend including the following sections.
 
