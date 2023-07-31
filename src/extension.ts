@@ -2,23 +2,15 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
 
-function generateSubTestJSON(
-  name: string,
-  path: string,
-  buildTags: string
-): string {
-  return JSON.stringify(
-    {
-      name: name,
-      type: "go",
-      request: "launch",
-      program: path,
-      buildFlags: `-tags '${buildTags}'`,
-      args: ["-test.run", name],
-    },
-    null,
-    2
-  );
+function generateSubTestJSON(name: string, path: string, buildTags: string) {
+  return {
+    name: name,
+    type: "go",
+    request: "launch",
+    program: path,
+    buildFlags: `-tags '${buildTags}'`,
+    args: ["-test.run", name],
+  };
 }
 
 // This method is called when your extension is activated
@@ -37,7 +29,7 @@ export function activate(context: vscode.ExtensionContext) {
       // The code you place here will be executed every time your command is executed
       // Display a message box to the user
       const editor = vscode.window.activeTextEditor;
-      if (vscode.workspace.workspaceFolders === undefined) {
+      if (!vscode.workspace.workspaceFolders) {
         vscode.window.showErrorMessage(
           "extension must be ran in a vscode workspace"
         );
@@ -98,12 +90,70 @@ export function activate(context: vscode.ExtensionContext) {
                   path,
                   buildTags
                 );
-                // write generated json to clipboard
-                vscode.env.clipboard.writeText(json).then(() => {
-                  vscode.window.showInformationMessage(
-                    `copied ${currentSubTest} JSON. Add it to your launch.json`
+                // write generated json to launch.json
+                if (!vscode.workspace.workspaceFolders) {
+                  vscode.window.showErrorMessage(
+                    "extension must be ran in a vscode workspace"
                   );
-                });
+                  return;
+                }
+
+                const launch = vscode.workspace.getConfiguration(
+                  "launch",
+                  vscode.workspace.workspaceFolders[0].uri
+                );
+                const config = launch.get("configurations");
+                if (config instanceof Array) {
+                  // check if config already exists
+                  for (let i = 0; i < config.length; i++) {
+                    if (config[i].name == currentSubTest) {
+                      vscode.window
+                        .showWarningMessage(
+                          "launch.json config already exists",
+                          "open launch.json"
+                        )
+                        .then(() => {
+                          if (!vscode.workspace.workspaceFolders) {
+                            vscode.window.showErrorMessage(
+                              "extension must be ran in a vscode workspace"
+                            );
+                            return;
+                          }
+                          vscode.workspace.openTextDocument(
+                            path + "/.vscode/launch.json"
+                          );
+                        });
+                      return;
+                    }
+                  }
+                  config.push(json);
+                  launch.update("configurations", config);
+                } else {
+                  vscode.window.showErrorMessage(
+                    "configuration field in launch.json should be an array"
+                  );
+                  return;
+                }
+
+                // TODO(kperath): see README
+                // vscode.env.clipboard.writeText(json).then(() => {
+                // });
+                vscode.window
+                  .showInformationMessage(
+                    `copied ${currentSubTest} JSON. Add it to your launch.json`,
+                    "open launch.json"
+                  )
+                  .then(() => {
+                    if (!vscode.workspace.workspaceFolders) {
+                      vscode.window.showErrorMessage(
+                        "extension must be ran in a vscode workspace"
+                      );
+                      return;
+                    }
+                    vscode.workspace.openTextDocument(
+                      path + "/.vscode/launch.json"
+                    );
+                  });
               }
             }
           });
