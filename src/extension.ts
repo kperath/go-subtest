@@ -2,14 +2,18 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
 
-function generateSubTestJSON(name: string, path: string, tags: string): string {
+function generateSubTestJSON(
+  name: string,
+  path: string,
+  buildTags: string
+): string {
   return JSON.stringify(
     {
       name: name,
       type: "go",
       request: "launch",
       program: path,
-      buildFlags: `-tags ${tags}`,
+      buildFlags: `-tags '${buildTags}'`,
       args: ["-test.run", name],
     },
     null,
@@ -44,8 +48,8 @@ export function activate(context: vscode.ExtensionContext) {
       if (editor) {
         const cursorPosNum = editor.document.offsetAt(editor.selection.active);
         const cursorPos = editor.document.positionAt(cursorPosNum);
-        const wordRange = editor?.document.getWordRangeAtPosition(cursorPos);
-        const cursorText = editor?.document.getText(wordRange);
+        const wordRange = editor.document.getWordRangeAtPosition(cursorPos);
+        const cursorText = editor.document.getText(wordRange);
 
         // list all symbols in the document
         vscode.commands
@@ -65,7 +69,22 @@ export function activate(context: vscode.ExtensionContext) {
               // get current symbol cursor is focused on
               if (symbol.range.contains(cursorPos)) {
                 const currentSubTest = symbol.name + "/" + cursorText;
-                const json = generateSubTestJSON(currentSubTest, path, "");
+
+                // find build tags
+                const documentText = editor.document.getText();
+                const match = documentText.match("//go:build");
+                let buildTags = "";
+                if (match && match.index) {
+                  const matchPos = editor.document.positionAt(match.index);
+                  const line = editor.document.lineAt(matchPos);
+                  buildTags = line.text.replace("//go:build", "");
+                }
+
+                const json = generateSubTestJSON(
+                  currentSubTest,
+                  path,
+                  buildTags
+                );
                 // write generated json to clipboard
                 vscode.env.clipboard.writeText(json).then(() => {
                   vscode.window.showInformationMessage(
