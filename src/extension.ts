@@ -54,14 +54,10 @@ function findStringMatch(matchStr: string): vscode.Position {
   const editor = getEditor();
   const documentText = editor.document.getText();
   const match = documentText.match(matchStr);
-  if (!match) {
+  if (!match || !match.index) {
     throw new Error(`match "${matchStr}" not found in current file`);
   }
-  let matchIndex = 0;
-  if (match.index) {
-    matchIndex = match.index;
-  }
-  return editor.document.positionAt(matchIndex);
+  return editor.document.positionAt(match.index);
 }
 
 function generateSubTestJSON(name: string, path: string, buildTags: string) {
@@ -131,14 +127,15 @@ async function addSubTest() {
     const subTest = await getSubTest();
 
     // find go build tags
-    let pos;
+    let buildTags;
     try {
-      pos = findStringMatch("//go:build");
+      const pos = findStringMatch("//go:build");
+      const line = editor.document.lineAt(pos);
+      buildTags = line.text.replace("//go:build ", "");
     } catch (err) {
-      pos = new vscode.Position(0, 0);
+      // no build tags found
+      buildTags = "";
     }
-    const line = editor.document.lineAt(pos);
-    const buildTags = line.text.replace("//go:build ", "");
 
     const json = generateSubTestJSON(
       subTest,
