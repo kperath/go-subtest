@@ -20,6 +20,10 @@ Quickly generate json required in your launch.json for your Go subtests.
 
 Requires the [Go VSCode extension](https://github.com/golang/vscode-go) in order to parse symbols and determine you are in a test function.
 
+## Limitations
+
+This extension **does not support** [multi-root workspaces](https://code.visualstudio.com/docs/editor/multi-root-workspaces) and will just use the one it retrieves first from the API to determine the launch.json file it needs to inject to.
+
 ## Extension Settings
 
 This extension contributes the following settings:

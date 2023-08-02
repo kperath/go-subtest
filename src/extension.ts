@@ -1,17 +1,24 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
+import path = require("path");
 import * as vscode from "vscode";
 
 const LAUNCH_PATH = "/.vscode/launch.json";
 
 function getURI(): vscode.Uri {
-  if (!vscode.workspace.workspaceFolders) {
+  const workspaceFolders = vscode.workspace.workspaceFolders;
+  if (!workspaceFolders) {
     vscode.window.showErrorMessage(
       "Extension must be ran in a vscode workspace"
     );
     throw new Error("Extension must be ran in a vscode workspace");
   }
-  return vscode.workspace.workspaceFolders[0].uri;
+  if (workspaceFolders.length > 1) {
+    vscode.window.showWarningMessage(
+      `Extension does not support multi-root workspaces. Using workspace ${workspaceFolders[0].name}`
+    );
+  }
+  return workspaceFolders[0].uri;
 }
 
 function getEditor(): vscode.TextEditor {
@@ -62,6 +69,7 @@ function generateSubTestJSON(name: string, path: string, buildTags: string) {
     name: name,
     type: "go",
     request: "launch",
+    mode: "test",
     program: path,
     buildFlags: `-tags '${buildTags}'`,
     args: ["-test.run", name],
@@ -132,7 +140,11 @@ async function addSubTest() {
     const line = editor.document.lineAt(pos);
     const buildTags = line.text.replace("//go:build ", "");
 
-    const json = generateSubTestJSON(subTest, uri.path, buildTags);
+    const json = generateSubTestJSON(
+      subTest,
+      path.dirname(editor.document.uri.fsPath), // package name
+      buildTags
+    );
 
     // if option enabled, copy json to clipboard instead
     const useClipboard = vscode.workspace
@@ -186,7 +198,6 @@ async function goToSubTest() {
       vscode.window.showErrorMessage("Not a go file");
       throw new Error("Not a go file");
     }
-    const uri = getURI();
     const subTest = await getSubTest();
     await openLaunchConfiguration(subTest);
   } catch (err) {
