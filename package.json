@@ -4,6 +4,10 @@
   "description": "quickly generate json required in your launch.json for subtests",
   "version": "0.0.1",
   "icon": "media/gopher.png",
+  "publisher": "kperath",
+  "repository": {
+    "url": "https://github.com/kperath/go-subtest"
+  },
   "engines": {
     "vscode": "^1.80.0"
   },
