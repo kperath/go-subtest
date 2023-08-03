@@ -7,7 +7,7 @@ const LAUNCH_PATH = "/.vscode/launch.json";
 
 function getURI(): vscode.Uri {
   const workspaceFolders = vscode.workspace.workspaceFolders;
-  if (!workspaceFolders) {
+  if (workspaceFolders === undefined) {
     vscode.window.showErrorMessage(
       "Extension must be ran in a vscode workspace"
     );
@@ -23,7 +23,7 @@ function getURI(): vscode.Uri {
 
 function getEditor(): vscode.TextEditor {
   const editor = vscode.window.activeTextEditor;
-  if (!editor) {
+  if (editor === undefined) {
     vscode.window.showErrorMessage("Editor window not open");
     throw new Error("Editor window not open");
   }
@@ -54,7 +54,7 @@ function findStringMatch(matchStr: string): vscode.Position {
   const editor = getEditor();
   const documentText = editor.document.getText();
   const match = documentText.match(matchStr);
-  if (!match || !match.index) {
+  if (match === null || match.index === undefined) {
     throw new Error(`match "${matchStr}" not found in current file`);
   }
   return editor.document.positionAt(match.index);
@@ -99,7 +99,7 @@ async function getSubTest(): Promise<string> {
     throw new Error("empty line");
   }
   const match = line.text.match(/".*"/);
-  if (!match) {
+  if (match === null) {
     throw new Error("no match found in quotes");
   }
   const subTestName = match[0].replaceAll('"', "").replaceAll(" ", "_");
