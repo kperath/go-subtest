@@ -11,3 +11,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ## [v0.0.2]
 
 - Critical bug fixes
+
+## [v0.0.3]
+
+- Fix bug for finding go build tags

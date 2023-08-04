@@ -2,7 +2,7 @@
   "name": "go-subtest",
   "displayName": "go-subtest",
   "description": "quickly generate json required in your launch.json for subtests",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "icon": "media/gopher.png",
   "publisher": "kperath",
   "repository": {
